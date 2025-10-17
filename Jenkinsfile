@@ -1,6 +1,15 @@
 pipeline {
     agent any
 
+    environment {
+        // Define environment variables here
+        REGISTRY_CENTRAL_USER = 'centralcontainers'
+        REGISTRY_CENTRAL_HOST = "${REGISTRY_CENTRAL_USER}.azurecr.io"
+        IMAGE_NAME = "${REGISTRY_CENTRAL_HOST}/optimized-app:${env.BUILD_NUMBER}"
+        RESOURCE_GROUP = 'rg-devops-test'
+        AKS_CLUSTER = 'aks-devops-test'
+    }
+
     stages {
         stage('Build') {
             steps {
