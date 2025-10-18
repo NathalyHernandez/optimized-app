@@ -35,7 +35,7 @@ pipeline {
                 echo 'Deploying to AKS...'
                 sh 'az aks get-credentials --resource-group ${RESOURCE_GROUP} --name ${AKS_CLUSTER}'
                 sh 'kubectl apply -f k8s/deployment.yaml'
-                sh 'kubectl rollout status deployment/optimized-app'
+                sh 'kubectl rollout status deployment/nodejs-app'
                 // Add deploy steps here
             }
         }
