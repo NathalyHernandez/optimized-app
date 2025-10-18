@@ -35,7 +35,7 @@ jobs:
       - name: set Image tag based on branch
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+            echo "IMAGE_TAG=main" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
             echo "IMAGE_TAG=staging" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/development" ]; then
@@ -77,11 +77,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deployar en produccion
-        run: echo "Dessplegando en el entorno de produccion ${IMAGE_URI}"
+        run: echo "Desplegando en el entorno de produccion ${IMAGE_URI}"
 
-  deploy-feature:
-    if: github.ref == 'refs/heads/feature/github-action-aws'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deployar en feature/github-action-aws
-        run: echo "Desplegando en el entorno de feature/github-action-aws ${IMAGE_URI}"
