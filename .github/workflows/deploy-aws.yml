@@ -14,3 +14,32 @@ jobs:
     steps:
       - name: Como funciona github actions
         run: echo "Hola mundo desde github actions"
+
+  deploy-dev:
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar en desarrollo
+        run: echo "Desplegando en el entorno de desarrollo"
+
+  deploy-staging:
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar en staging
+        run: echo "Desplegando en el entorno de staging"
+    
+  deploy-prod:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar en produccion
+        run: echo "Desplegando en el entorno de produccion"
+
+  deploy-feature:
+    if: github.ref == 'refs/heads/feature/github-action-aws'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar en feature/github-action-aws
+        run: echo "Desplegando en el entorno de feature/github-action-aws"
+        
