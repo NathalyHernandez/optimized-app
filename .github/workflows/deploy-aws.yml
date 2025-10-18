@@ -53,25 +53,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deployar en development
-        run: echo "Desplegando en el entorno de development ${env.IMAGE_URI}"
+        run: echo "Desplegando en el entorno de development ${IMAGE_URI}"
 
   deploy-staging:
     if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     steps:
       - name: Deployar en staging
-        run: echo "Desplegando en el entorno de staging ${env.IMAGE_URI}"
+        run: echo "Desplegando en el entorno de staging ${IMAGE_URI}"
 
   deploy-prod:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Deployar en produccion
-        run: echo "Desplegando en el entorno de produccion ${env.IMAGE_URI}"
+        run: echo "Desplegando en el entorno de produccion ${IMAGE_URI}"
 
   deploy-feature:
     if: github.ref == 'refs/heads/feature/github-action-aws'
     runs-on: ubuntu-latest
     steps:
       - name: Deployar en feature/github-action-aws
-        run: echo "Desplegando en el entorno de feature/github-action-aws ${env.IMAGE_URI}"
+        run: echo "Desplegando en el entorno de feature/github-action-aws ${IMAGE_URI}"
