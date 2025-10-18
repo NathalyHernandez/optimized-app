@@ -20,12 +20,22 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing...'
-                // Add test steps here
+                sh 'docker run --rm ${IMAGE_NAME} test'
             }
         }
-        stage('Deploy') {
+        stage('Push to ACR') {
             steps {
-                echo 'Deploying...'
+                echo 'Pushing to ACR...'
+                sh 'az acr login --name ${REGISTRY_CENTRAL_USER}'
+                sh 'docker push ${IMAGE_NAME}'
+            }
+        }
+        stage('Deploy to AKS') {
+            steps {
+                echo 'Deploying to AKS...'
+                sh 'az aks get-credentials --resource-group ${RESOURCE_GROUP} --name ${AKS_CLUSTER}'
+                sh 'kubectl apply -f k8s/deployment.yaml'
+                sh 'kubectl rollout status deployment/optimized-app'
                 // Add deploy steps here
             }
         }
