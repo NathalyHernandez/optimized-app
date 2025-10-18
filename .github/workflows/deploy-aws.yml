@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deployar en produccion
-        run: echo "Desplegando en el entorno de produccion ${IMAGE_URI}"
+        run: echo "Dessplegando en el entorno de produccion ${IMAGE_URI}"
 
   deploy-feature:
     if: github.ref == 'refs/heads/feature/github-action-aws'
