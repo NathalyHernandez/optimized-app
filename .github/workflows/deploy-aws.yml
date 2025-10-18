@@ -35,11 +35,11 @@ jobs:
       - name: set Image tag based on branch
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            echo "IMAGE_TAG=main" >> $GITHUB_ENV
+            echo "IMAGE_TAG=main-latest" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
-            echo "IMAGE_TAG=staging" >> $GITHUB_ENV
+            echo "IMAGE_TAG=staging-latest" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/development" ]; then
-            echo "IMAGE_TAG=development" >> $GITHUB_ENV
+            echo "IMAGE_TAG=development-latest" >> $GITHUB_ENV
           else
             echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
           fi
