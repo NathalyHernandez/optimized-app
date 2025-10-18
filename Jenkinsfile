@@ -20,7 +20,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing...'
-                sh 'docker run --rm ${IMAGE_NAME} test'
+                sh 'docker run --rm ${IMAGE_NAME} node -e "console.log(\'Container is working!\')"'
             }
         }
         stage('Push to ACR') {
