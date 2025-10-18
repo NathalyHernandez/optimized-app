@@ -11,10 +11,10 @@ pipeline {
     }
 
     stages {
-        stage('Validar version docker') {
+        stage('Build') {
             steps {
                 echo 'Building...'
-                sh 'docker version'
+                sh 'docker build -t ${IMAGE_NAME} .'
             }
         }
         stage('Test') {
