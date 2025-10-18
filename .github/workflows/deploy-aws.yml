@@ -6,7 +6,7 @@ on:
       - main
       - staging
       - development
-      - feature/devops-pipeline
+      - feature/github-action-aws
 
 jobs:
   deploy:
