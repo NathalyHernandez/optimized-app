@@ -32,19 +32,29 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: set Image tag based on branch
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            echo "IMAGE_TAG=staging" >> $GITHUB_ENV
+          elif [ "${{ github.ref }}" == "refs/heads/development" ]; then
+            echo "IMAGE_TAG=development" >> $GITHUB_ENV
+          else
+            echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
+          fi
+
       - name: Build image to Amazon ECR
         run: |
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG . -t $ECR_REPOSITORY:latest
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
      
       - name: Tag image for ECR
         run: |
           docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$IMAGE_TAG
-          docker tag $ECR_REPOSITORY:latest ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
 
       - name: Push images to ECR
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$IMAGE_TAG
-          docker push ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
           IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$IMAGE_TAG
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
