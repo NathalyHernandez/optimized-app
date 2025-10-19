@@ -109,7 +109,7 @@ jobs:
             --query "reverse(sort_by(imageIds[?imageTag!=null && starts_with(imageTag, 'main-')], &imageTag))[*].imageTag" \
             --output text | awk '{print $2}')
 
-          echo "🕐 Revirtiendo a versión: $PREVIOUS_TAG"
+          echo "Revirtiendo a versión: $PREVIOUS_TAG"
           docker pull ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG
           docker tag ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG \
                      ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
@@ -118,3 +118,29 @@ jobs:
       - name: Notificación post-rollback
         run: |
           echo "Rollback completado correctamente a la versión: $PREVIOUS_TAG"
+
+  notify-slack:
+    name: Notificar estado en Slack
+    needs: [build, deploy-dev, deploy-staging, deploy-prod, rollback-prod]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar notificación a Slack
+        run: |
+          STATUS="${{ job.status }}"
+          COLOR="#36a64f"
+          MESSAGE="✅ Despliegue exitoso"
+          if [ "$STATUS" != "success" ]; then
+            COLOR="#FF0000"
+            MESSAGE="🚨 Despliegue fallido o rollback ejecutado"
+          fi
+
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"attachments\": [{
+              \"color\": \"$COLOR\",
+              \"title\": \"Estado del pipeline AWS ECR/ECS\",
+              \"text\": \"$MESSAGE en la rama *${{ github.ref_name }}*.\"
+            }]
+          }" ${{ secrets.SLACK_WEBHOOK_URL }}
+               
