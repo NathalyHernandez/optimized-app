@@ -81,28 +81,19 @@ jobs:
       
       - name: simulate failure
         run: exit 1
-      
-      - name: Rollback en caso de fallo
-        if: failure()
+
+  rollback-prod:
+    name: Rollback en producción
+    needs: deploy-prod          
+    if: failure()              
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configurar credenciales de AWS
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Ejecutar rollback
-        if: failure()
-        run: |
-          PREVIOUS_TAG=$(aws ecr list-images \
-            --repository-name $ECR_REPOSITORY \
-            --query "reverse(images[?imageTags!=\`null\`].imageTags)[1]" \
-            --output text | awk '{print $2}')
-
-          echo "Revirtiendo a versión: $PREVIOUS_TAG"
-          docker pull ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG
-          docker tag ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG \
-                     ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
-          docker push ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
 
       - name: Notificación post-rollback
         if: failure()
