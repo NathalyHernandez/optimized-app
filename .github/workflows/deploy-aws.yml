@@ -79,6 +79,9 @@ jobs:
       - name: Deployar en produccion
         run: echo "Desplegando en el entorno de produccion ${IMAGE_URI}"
       
+      - name: simulate failure
+        run: exit 1
+      
       - name: Rollback en caso de fallo
         if: failure()
         uses: aws-actions/configure-aws-credentials@v2
