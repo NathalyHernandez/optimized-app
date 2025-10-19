@@ -93,11 +93,12 @@ jobs:
       - name: Ejecutar rollback
         if: failure()
         run: |
-          echo "🚨 Despliegue fallido, iniciando rollback..."
-          PREVIOUS_TAG=$(aws ecr list-images --repository-name $ECR_REPOSITORY \
-            --query 'imageIds[*].imageTag' --output text | tail -n 2 | head -n 1)
+          PREVIOUS_TAG=$(aws ecr list-images \
+            --repository-name $ECR_REPOSITORY \
+            --query "reverse(sort_by(imageIds[?starts_with(imageTag, 'main-')], &imageTag))[*].imageTag" \
+            --output text | awk '{print $2}')
 
-          echo "🕐 Revirtiendo a versión: $PREVIOUS_TAG"
+          echo "Revirtiendo a versión: $PREVIOUS_TAG"
           docker pull ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG
           docker tag ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG \
                      ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
@@ -105,4 +106,4 @@ jobs:
 
       - name: Notificación post-rollback
         if: failure()
-        run: echo "🚨 Despliegue fallido, rollback completado correctamente."
+        run: echo "✅ Rollback completado correctamente a la versión anterior: $PREVIOUS_TAG"
