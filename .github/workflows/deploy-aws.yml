@@ -78,4 +78,28 @@ jobs:
     steps:
       - name: Deployar en produccion
         run: echo "Desplegando en el entorno de produccion ${IMAGE_URI}"
+      
+      - name: Rollback en caso de fallo
+        if: failure()
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
+      - name: Ejecutar rollback
+        if: failure()
+        run: |
+          echo "🚨 Despliegue fallido, iniciando rollback..."
+          PREVIOUS_TAG=$(aws ecr list-images --repository-name $ECR_REPOSITORY \
+            --query 'imageIds[*].imageTag' --output text | tail -n 2 | head -n 1)
+
+          echo "🕐 Revirtiendo a versión: $PREVIOUS_TAG"
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG
+          docker tag ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG \
+                     ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
+
+      - name: Notificación post-rollback
+        if: failure()
+        run: echo "🚨 Despliegue fallido, rollback completado correctamente."
