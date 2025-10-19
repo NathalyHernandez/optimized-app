@@ -95,7 +95,7 @@ jobs:
         run: |
           PREVIOUS_TAG=$(aws ecr list-images \
             --repository-name $ECR_REPOSITORY \
-            --query "reverse(sort_by(imageIds[?starts_with(imageTag, 'main-')], &imageTag))[*].imageTag" \
+            --query "reverse(images[?imageTags!=\`null\`].imageTags)[1]" \
             --output text | awk '{print $2}')
 
           echo "Revirtiendo a versión: $PREVIOUS_TAG"
