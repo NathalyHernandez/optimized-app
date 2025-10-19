@@ -35,11 +35,11 @@ jobs:
       
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            echo "IMAGE_TAG=main-${{ github.run_number }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=main-$IMAGE_TAG" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
-            echo "IMAGE_TAG=staging-${{ github.run_number }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=staging-$IMAGE_TAG" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/development" ]; then
-            echo "IMAGE_TAG=development-${{ github.run_number }}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=development-$IMAGE_TAG" >> $GITHUB_ENV
           else
             echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
           fi
@@ -76,7 +76,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: simulate failure
+      - name: Deployar en producción
         run: echo "Desplegando en el entorno de producción ${IMAGE_URI}"
 
   rollback-prod:
