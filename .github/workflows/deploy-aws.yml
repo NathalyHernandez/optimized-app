@@ -6,7 +6,6 @@ on:
       - main
       - staging
       - development
-      - feature/github-action-aws
 
 env:
   AWS_REGION: us-east-1
@@ -35,11 +34,11 @@ jobs:
       - name: set Image tag based on branch
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            echo "IMAGE_TAG=main-latest" >> $GITHUB_ENV
+            echo "IMAGE_TAG=main-${{ github.run_number }}" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
-            echo "IMAGE_TAG=staging-latest" >> $GITHUB_ENV
+            echo "IMAGE_TAG=staging-${{ github.run_number }}" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/development" ]; then
-            echo "IMAGE_TAG=development-latest" >> $GITHUB_ENV
+            echo "IMAGE_TAG=development-${{ github.run_number }}" >> $GITHUB_ENV
           else
             echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
           fi
