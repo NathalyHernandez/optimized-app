@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: simulate failure
-        run: exit 1
+        run: echo "Desplegando en el entorno de producción ${IMAGE_URI}"
 
   rollback-prod:
     name: Rollback en producción
