@@ -61,6 +61,7 @@ jobs:
   deploy-dev:
     if: github.ref == 'refs/heads/development'
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Deployar en development
         run: echo "Desplegando en el entorno de development ${IMAGE_URI}"
@@ -68,6 +69,7 @@ jobs:
   deploy-staging:
     if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Deployar en staging
         run: echo "Desplegando en el entorno de staging ${IMAGE_URI}"
@@ -75,11 +77,11 @@ jobs:
   deploy-prod:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Deployar en producción
         run: |
-          echo "🚨 Simulando fallo en el despliegue..."
-          exit 1
+          echo "Desplegando en el entorno de producción ${IMAGE_URI}"
 
   rollback-prod:
     name: Rollback en producción
@@ -100,7 +102,7 @@ jobs:
 
       - name: Ejecutar rollback
         run: |
-          echo "🚨 Despliegue fallido, iniciando rollback..."
+          echo "Despliegue fallido, iniciando rollback..."
 
           PREVIOUS_TAG=$(aws ecr list-images \
             --repository-name $ECR_REPOSITORY \
@@ -115,4 +117,4 @@ jobs:
 
       - name: Notificación post-rollback
         run: |
-          echo "✅ Rollback completado correctamente a la versión: $PREVIOUS_TAG"
+          echo "Rollback completado correctamente a la versión: $PREVIOUS_TAG"
