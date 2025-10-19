@@ -129,10 +129,10 @@ jobs:
         run: |
           STATUS="${{ job.status }}"
           COLOR="#36a64f"
-          MESSAGE="✅ Despliegue exitoso"
+          MESSAGE="Despliegue exitoso"
           if [ "$STATUS" != "success" ]; then
             COLOR="#FF0000"
-            MESSAGE="🚨 Despliegue fallido o rollback ejecutado"
+            MESSAGE="Despliegue fallido o rollback ejecutado"
           fi
 
           curl -X POST -H 'Content-type: application/json' \
