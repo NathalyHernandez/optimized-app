@@ -76,9 +76,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Deployar en produccion
-        run: echo "Desplegando en el entorno de produccion ${IMAGE_URI}"
-      
       - name: simulate failure
         run: exit 1
 
@@ -95,7 +92,25 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Notificación post-rollback
-        if: failure()
+      - name: Login en Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Ejecutar rollback
         run: |
-          echo "Se ha realizado un rollback a la versión anterior debido a un fallo en el despliegue."
+          echo "🚨 Despliegue fallido, iniciando rollback..."
+
+          PREVIOUS_TAG=$(aws ecr list-images \
+            --repository-name $ECR_REPOSITORY \
+            --query "reverse(sort_by(imageIds[?imageTag!=null && starts_with(imageTag, 'main-')], &imageTag))[*].imageTag" \
+            --output text | awk '{print $2}')
+
+          echo "🕐 Revirtiendo a versión: $PREVIOUS_TAG"
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG
+          docker tag ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:$PREVIOUS_TAG \
+                     ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:latest
+
+      - name: Notificación post-rollback
+        run: |
+          echo "✅ Rollback completado correctamente a la versión: $PREVIOUS_TAG"
