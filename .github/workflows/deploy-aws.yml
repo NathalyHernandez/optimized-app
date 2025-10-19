@@ -106,4 +106,5 @@ jobs:
 
       - name: Notificación post-rollback
         if: failure()
-        run: echo "✅ Rollback completado correctamente a la versión anterior: $PREVIOUS_TAG"
+        run: |
+          echo "Se ha realizado un rollback a la versión anterior debido a un fallo en el despliegue."
